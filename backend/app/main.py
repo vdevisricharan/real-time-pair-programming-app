@@ -7,16 +7,23 @@ from .database import engine, get_db, Base
 from .routers import rooms, autocomplete
 from .websocket.manager import manager
 from .services.room_service import RoomService
+import os
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Pair Programming API", version="1.0.0")
 
+# Get allowed origins from environment variable
+ALLOWED_ORIGINS = os.getenv(
+    "ALLOWED_ORIGINS",
+    "http://localhost:3000,http://localhost:5173"
+).split(",")
+
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
